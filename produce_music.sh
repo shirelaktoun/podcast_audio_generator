@@ -15,7 +15,9 @@ if [ "$#" -ne 1 ] || [ "$1" == "--help" ]; then
     exit 1
 fi
 
-# --- Dependency Checks ---
+# --- Virtual Environment and Dependency Setup ---
+VENV_DIR="venv"
+
 # Check for Python 3
 if ! command -v python3 &> /dev/null; then
     echo "Error: Python 3 is not installed. Please install it to use this script."
@@ -23,18 +25,30 @@ if ! command -v python3 &> /dev/null; then
     exit 1
 fi
 
-# Check for pip
-if ! python3 -m pip --version &> /dev/null; then
-    echo "Error: pip for Python 3 is not installed. Please install it."
-    echo "On Debian/Ubuntu, you can install it with: sudo apt-get install python3-pip"
+# Check for python3-venv package, which is needed to create virtual environments
+if ! python3 -c "import venv" &> /dev/null; then
+    echo "Error: The 'venv' module is not available for Python 3."
+    echo "On Debian/Ubuntu, you can install it with: sudo apt-get install python3-venv"
     exit 1
 fi
 
-# Check for required Python packages
-if ! python3 -c "import torch; import audiocraft" &> /dev/null; then
-    echo "Error: Required Python packages are not installed."
-    echo "Please install them by running: pip install torch audiocraft"
-    exit 1
+# Create the virtual environment if it doesn't exist
+if [ ! -d "$VENV_DIR" ]; then
+    echo "Creating Python virtual environment in './$VENV_DIR'..."
+    if ! python3 -m venv "$VENV_DIR"; then
+        echo "Failed to create the virtual environment."
+        exit 1
+    fi
+fi
+
+# Check for required Python packages within the virtual environment
+if ! "$VENV_DIR/bin/python3" -c "import torch; import audiocraft" &> /dev/null; then
+    echo "Required Python packages not found in the virtual environment."
+    echo "Installing torch and audiocraft... (This may take a while)"
+    if ! "$VENV_DIR/bin/pip" install torch audiocraft; then
+        echo "Failed to install required Python packages."
+        exit 1
+    fi
 fi
 
 # Check if the generator script exists
@@ -86,7 +100,7 @@ sanitized_description=$(echo "$description" | tr -s ' ' '_' | tr -cd '[:alnum:]_
 output_filename="${sanitized_description}.wav"
 
 echo "Generating music. This may take a few moments..."
-python3 generate_music.py --description "$description" --duration "$duration_seconds" --output "$output_filename"
+"$VENV_DIR/bin/python3" generate_music.py --description "$description" --duration "$duration_seconds" --output "$output_filename"
 
 if [ $? -eq 0 ]; then
     echo "Successfully generated music and saved it to: $output_filename"
