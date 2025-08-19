@@ -44,9 +44,17 @@ fi
 # Check for required Python packages within the virtual environment
 if ! "$VENV_DIR/bin/python3" -c "import torch; import audiocraft" &> /dev/null; then
     echo "Required Python packages not found in the virtual environment."
-    echo "Installing torch and audiocraft... (This may take a while)"
-    if ! "$VENV_DIR/bin/pip" install torch audiocraft; then
-        echo "Failed to install required Python packages."
+    echo "Installing dependencies... (This may take a while)"
+
+    echo "Installing torch (CPU version)..."
+    if ! "$VENV_DIR/bin/pip" install torch --index-url https://download.pytorch.org/whl/cpu; then
+        echo "Failed to install torch."
+        exit 1
+    fi
+
+    echo "Installing audiocraft..."
+    if ! "$VENV_DIR/bin/pip" install audiocraft; then
+        echo "Failed to install audiocraft."
         exit 1
     fi
 fi
