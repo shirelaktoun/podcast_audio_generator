@@ -1,57 +1,61 @@
-# Text-to-Music Generator
+# Text-to-Music Generator (for Windows)
 
-This project consists of a set of scripts to generate instrumental background music from a textual description of its mood and a specified duration.
+This project provides a PowerShell script to generate instrumental background music from a textual description of its mood and a specified duration. It is designed to be run on Windows 11.
 
 ## Description
 
-The main script is `produce_music.sh`, which acts as a user-friendly interface for a Python script (`generate_music.py`) that uses Meta's Audiocraft library to generate music.
+The main script, `produce_music.ps1`, provides a user-friendly interface in PowerShell. It calls a Python script (`generate_music.py`) in the background, which uses Meta's Audiocraft library to generate the music.
 
-The script automatically creates and manages a Python virtual environment to avoid conflicts with system-wide packages.
+The script is self-contained and will automatically set up a local Python virtual environment to handle all its dependencies, ensuring that it does not interfere with other Python projects or system-wide packages.
 
-## Dependencies
+## Prerequisites
 
-Before you can run the script, you need to have the following dependencies installed on your system:
+Before you begin, you need to have Python 3 installed on your Windows 11 system.
 
-1.  **Python 3**: The scripts require Python 3. You can check if you have it installed by running `python3 --version`. If not, you can install it on a Debian-based system with:
-    ```bash
-    sudo apt-get update
-    sudo apt-get install python3
-    ```
+1.  **Install Python 3**:
+    *   Download the latest Python 3 installer from the official website: `https://www.python.org/downloads/windows/`
+    *   Run the installer.
+    *   **Important**: On the first page of the installer, make sure to check the box that says **"Add Python to PATH"**. This is crucial for the script to be able to find and use Python.
 
-2.  **Python 3 venv module**: This module is required for creating virtual environments. You can install it on a Debian-based system with:
-    ```bash
-    sudo apt-get install python3-venv
-    ```
-
-The script will automatically create a virtual environment in a directory named `venv` and install the required Python libraries (`torch` and `audiocraft`) into it.
-
-**Note**: The first time you run the script, the required Python packages and the MusicGen model will be downloaded. This is a one-time process and may take a few minutes depending on your internet connection.
+2.  **PowerShell Execution Policy**:
+    *   By default, Windows may prevent you from running local PowerShell scripts. To allow the script to run, you may need to change the execution policy for your user.
+    *   Open PowerShell as an Administrator and run the following command:
+        ```powershell
+        Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+        ```
+    *   This only needs to be done once.
 
 ## Usage
 
-To generate music, you need to run the `produce_music.sh` script with a single argument: a string that contains the duration and the mood of the music, separated by a comma.
-
-First, make the script executable:
-```bash
-chmod +x produce_music.sh
-```
+1.  Open a PowerShell terminal.
+2.  Navigate to the directory where you have saved the project files (e.g., `cd C:\path\to\project`).
+3.  Run the `produce_music.ps1` script with your desired prompt as an argument.
 
 ### Syntax
 
-```bash
-./produce_music.sh "<duration>, <description>"
+```powershell
+.\produce_music.ps1 "<duration>, <description>"
 ```
 
 ### Example
 
 To generate a 1-minute-long tune that is "Positive and Uplifting", you would run:
 
-```bash
-./produce_music.sh "1 minute, Positive and Uplifting (conveying hope, triumph, or optimism)"
+```powershell
+.\produce_music.ps1 "1 minute, Positive and Uplifting (conveying hope, triumph, or optimism)"
 ```
 
-The script will then generate a `.wav` file in the same directory, with a name based on the description (e.g., `Positive_and_Uplifting_conveying_hope_triumph_or_optimism.wav`).
+### First-Time Setup
+
+The first time you run the script, it will perform a one-time setup:
+*   It will create a Python virtual environment in a new `venv` folder.
+*   It will download and install the required Python libraries (`audiocraft`, `pytorch`, etc.) into this `venv` folder. This may take several minutes depending on your internet connection.
+*   It will also download the pre-trained MusicGen AI model the first time you generate music.
+
+Subsequent runs of the script will be much faster as they will use the already-installed dependencies.
+
+The script will generate a `.wav` file in the same directory, with a name based on the description you provided.
 
 ## How it Works
 
-The `produce_music.sh` script first checks for the required system dependencies. It then creates a Python virtual environment (if it doesn't already exist) and installs the necessary Python libraries into it. Finally, it parses your input to determine the length and mood and calls the `generate_music.py` script using the virtual environment's Python interpreter. This script uses the `audiocraft` library and the pre-trained "musicgen-small" model to generate the music. The final output is saved as a WAV audio file.
+The `produce_music.ps1` script automates the entire process. It checks for Python, sets up the isolated virtual environment, and installs all dependencies. It then parses your input to determine the length and mood, and finally calls the `generate_music.py` script to do the actual work of creating the music with the `audiocraft` library.
