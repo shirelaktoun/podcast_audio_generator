@@ -13,7 +13,7 @@ Example: "1 minute, Positive and Uplifting (conveying hope, triumph, or optimism
 .EXAMPLE
 PS> .\produce_music.ps1 "1 minute, a happy and uplifting tune"
 
-This command will generate a one-minute-long WAV file with a happy and uplifting mood.
+This command will generate a one-minute-long MP3 file with a happy and uplifting mood.
 #>
 [CmdletBinding()]
 param (
@@ -59,14 +59,14 @@ $pythonVenvPath = Join-Path -Path $venvDir -ChildPath "Scripts\python.exe"
 
 # Check for required Python packages
 try {
-    $checkCommand = "& `"$pythonVenvPath`" -c 'import torch; import audiocraft'"
+    $checkCommand = "& `"$pythonVenvPath`" -c 'import torch; import audiocraft; import lameenc; import mpmath'"
     Invoke-Expression $checkCommand
     Write-Host "Required Python packages are already installed."
 } catch {
     Write-Host "Required Python packages not found. Installing dependencies... (This may take a while)"
     try {
         $pipVenvPath = Join-Path -Path $venvDir -ChildPath "Scripts\pip.exe"
-        $installCommand = "& `"$pipVenvPath`" install audiocraft --extra-index-url https://download.pytorch.org/whl/cpu"
+        $installCommand = "& `"$pipVenvPath`" install 'numpy<2' mpmath audiocraft lameenc --extra-index-url https://download.pytorch.org/whl/cpu"
         Invoke-Expression $installCommand
         Write-Host "Dependencies installed successfully."
     } catch {
@@ -103,7 +103,7 @@ if ($durationSeconds -le 0) {
 # --- Music Generation ---
 # Create a sanitized filename
 $sanitizedDescription = $description -replace '[^a-zA-Z0-9_-]+', '_' -replace '_+', '_'
-$outputFilename = "$sanitizedDescription.wav"
+$outputFilename = "$sanitizedDescription.mp3"
 $outputFilePath = Join-Path -Path $ScriptPath -ChildPath $outputFilename
 
 Write-Host "Generating music for the description: '$description' with a duration of $durationSeconds seconds..."

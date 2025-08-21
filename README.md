@@ -49,12 +49,12 @@ To generate a 1-minute-long tune that is "Positive and Uplifting", you would run
 
 The first time you run the script, it will perform a one-time setup:
 *   It will create a Python virtual environment in a new `venv` folder.
-*   It will download and install the required Python libraries (`audiocraft`, `pytorch`, etc.) into this `venv` folder. This may take several minutes depending on your internet connection.
+*   It will download and install the required Python libraries (`audiocraft`, `pytorch`, `lameenc`, etc.) into this `venv` folder. This may take several minutes depending on your internet connection.
 *   It will also download the pre-trained MusicGen AI model the first time you generate music.
 
 Subsequent runs of the script will be much faster as they will use the already-installed dependencies.
 
-The script will generate a `.wav` file in the same directory, with a name based on the description you provided.
+The script will generate an `.mp3` file in the same directory, with a name based on the description you provided.
 
 ## How it Works
 
